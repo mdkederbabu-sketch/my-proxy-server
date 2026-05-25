@@ -4,8 +4,8 @@ import requests
 
 app = Flask(__name__)
 
-# Evomi থেকে পাওয়া প্রক্সি গেটওয়ে এবং পোর্ট এখানে বসাবে
-PROXY_URL = "http://gw.evomi.com:8000"  # তোমার পোর্ট বসাবে
+# তোমার দেওয়া Evomi প্রক্সি ডিটেইলস (Username:Password Auth সহ)
+PROXY_URL = "http://realxyroo1:S7WN3AwPReD5kzgYgvma_region-california_hardsession-RLX8SS2QV@core-residential.evomi.com:1002"
 
 @app.route('/')
 def home():
@@ -18,7 +18,8 @@ def home():
     }
     
     try:
-        response = requests.get(target_url, proxies=proxies, timeout=10)
+        # রিকোয়েস্টটি সরাসরি প্রক্সি দিয়ে পাঠানো হচ্ছে
+        response = requests.get(target_url, proxies=proxies, timeout=15)
         return response.text
     except Exception as e:
         return f"Proxy Error: {str(e)}", 500
