@@ -4,30 +4,36 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
-# এই ফাংশনটি প্রতি লাইনের জন্য একটি ইউনিক ৫ অক্ষরের সেশন আইডি তৈরি করবে
+# ৫ অক্ষরের ইউনিক সেশন আইডি তৈরির ফাংশন
 def generate_random_session():
     letters_and_digits = string.ascii_letters + string.digits
     return ''.join(random.choice(letters_and_digits) for i in range(5))
 
 @app.route('/')
 def index():
-    # ১. আপনার মূল এভোমি অ্যাকাউন্ট ক্রেডেনশিয়ালস
-    host_port = "core-residential.evomi.com:1002"
-    base_user = "realxyroo1"
-    password = "S7WN3AwPReD5kzgYgvma"
+    # আমেরিকার ১২টি বড় বড় স্টেট ও সিটির লিস্ট (যেন প্রতি লাইনে আলাদা সিটি আসে)
+    usa_regions = [
+        "california", "new.york", "texas", "florida", "illinois", 
+        "pennsylvania", "ohio", "georgia", "north.carolina", "michigan",
+        "new.jersey", "virginia"
+    ]
+    
+    # আপনার অ্যাকাউন্ট ক্রেডেনশিয়ালস
+    base_format = "core-residential.evomi.com:1002:realxyroo1:S7WN3AwPReD5kzgYgvma"
     
     usa_random_proxies = []
     
-    # ২. লুপ চালিয়ে ১২টি একদম ভিন্ন ভিন্ন সেশনের (ভিন্ন সিটির) প্রক্সি জেনারেট করা হচ্ছে
-    for _ in range(12):
+    # লুপ চালিয়ে ১২টি ভিন্ন সিটির প্রক্সি তৈরি করা হচ্ছে
+    for region in usa_regions:
         random_session = generate_random_session()
         
-        # এখানে '_region-united.states_' ব্যবহার করায় এভোমি নিজে থেকে আমেরিকার যেকোনো র‍্যান্ডম সিটি সিলেক্ট করবে
-        # আর প্রতি লাইনে সেশন আইডি আলাদা হওয়ায় ১২টি আইপিই ১২টি আলাদা সিটির হবে
-        proxy_line = f"{host_port}:{base_user}_region-united.states_hardsession-{random_session}:{password}"
+        # হুবহু আপনার দেখানো ফরম্যাট: base_format + _region-সিটি + _hardsession-কোড
+        proxy_line = f"{base_format}_region-{region}_hardsession-{random_session}"
         usa_random_proxies.append(proxy_line)
+        
+    # ১২টি প্রক্সি এলোমেলো (Shuffle) করে দেওয়া হচ্ছে যেন প্রতি রিফ্রেশে সিকোয়েন্স আলাদা হয়
+    random.shuffle(usa_random_proxies)
     
-    # ৩. স্ক্রিনে ১২টি আইপি একসাথে লিস্ট আকারে দেখাবে
     return Response("\n".join(usa_random_proxies), mimetype='text/plain')
 
 if __name__ == '__main__':
